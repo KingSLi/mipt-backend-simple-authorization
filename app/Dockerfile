@@ -5,6 +5,8 @@ RUN apk add --update bash
 RUN apk add libpq postgresql-dev
 RUN apk add build-base
 
+ENV FLASK_APP first_app.py
+
 WORKDIR /code
 ADD . /code
 
