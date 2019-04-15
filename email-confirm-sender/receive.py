@@ -18,7 +18,7 @@ def callback(ch, method, properties, body):
     user_email, url_to_confirm = body.split(' ')
     msg = MIMEMultipart()
 
-    sender = 'fantasticalbackenders@gmail.com'
+    sender = 'fantasticalbackenders@yandex.ru'
     password = 'press_F_to_pass_backend'
 
     msg['Subject'] = "Confirm your email"
@@ -29,7 +29,7 @@ def callback(ch, method, properties, body):
     msg.attach(msg_text)
 
     try:
-        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server = smtplib.SMTP('smtp.yandex.ru', 587)
         server.ehlo()
         server.starttls()
 
