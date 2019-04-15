@@ -10,7 +10,7 @@ conn_params = pika.ConnectionParameters('rabbit', 5672)
 connection = pika.BlockingConnection(conn_params)
 channel = connection.channel()
 
-channel.queue_declare(queue='first-queue')
+channel.queue_declare(queue='first-queue', durable=True)
 
 print("Waiting for messages. To exit press CTRL+C")
 
@@ -43,7 +43,7 @@ def callback(ch, method, properties, body):
     except Exception as err:
         print("Error: unable to send email: %s" % err)
 
-channel.basic_consume(callback, queue='first-queue')
+channel.basic_consume('first-queue', callback)
 
 try:
     channel.start_consuming()

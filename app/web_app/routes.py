@@ -5,13 +5,13 @@ from web_app.models import User
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 from itsdangerous import URLSafeTimedSerializer
-from web_app.confirmation_sender import send_confirmation
+from web_app.sender_confirmation import send_confirmation
 
 @app.route('/')
 @app.route('/index')
 @login_required
 def index():
-    return render_template('index.html', user=user, title='Home', posts=posts)
+    return render_template('index.html', title='Home')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -47,7 +47,7 @@ def register():
         db.session.commit()
 
         confirmation_token = create_token(user.email)
-        confiramtion_url = url_for("confirm_email", confirmation_token=confirmation_token)
+        confirmation_url = url_for("confirm_email", token=confirmation_token)
         send_confirmation(user.email, confirmation_url)
         flash('Congratulations, you are now a registered user!')
         return redirect(url_for('login'))
@@ -55,7 +55,7 @@ def register():
 
 @app.route('/confirm/<token>')
 @login_required
-def confirm_email(confirmation_token):
+def confirm_email(token):
     try:
         email = confirm_token(token)
     except:
@@ -70,13 +70,13 @@ def confirm_email(confirmation_token):
 
 
 def create_token(email):
-    url_serializer = URLSafeTimedSerializer(app.config['TOKEN_WORD'])
-    return url_serializer.dumps(email, salt=app.config['TOKEN_SALT'])
+    url_serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+    return url_serializer.dumps(email, salt=app.config['SECRET_SALT'])
 
 
-def confirm_email(token):
-    url_serializer = URLSafeTimedSerializer(app.config['TOKEN_WORD'])
+def confirm_token(token):
+    url_serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
     try:
-        return url_serializer.loads(token, salt=app.config['TOKEN_SALT'], max_age=60*60*24)
+        return url_serializer.loads(token, salt=app.config['SECRET_SALT'], max_age=60*60*24)
     except:
         return False
